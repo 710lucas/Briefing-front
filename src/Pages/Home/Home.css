@@ -50,6 +50,7 @@
     align-items: center;
     margin: auto;
     padding: 0rem 5rem;
+    transition: ease-out 0.2s;
 }
 
 .create-button{

@@ -130,9 +130,34 @@ export function Briefing(props : {briefing : BriefingType, whenSaved : (notify? 
             state: state
         }).then((response) => {
             props.whenSaved();
+            const element = document.getElementById(props.briefing.id);
+            const descriptionElement = element?.querySelector(".description");
+            if(descriptionElement?.classList.contains("full-description"))
+                descriptionElement.classList.remove("full-description");
         })
+
     }
 
+    const handleBriefClicking = () => {
+
+        const element = document.getElementById(props.briefing.id);
+        const button = element?.querySelector(".expand-button");
+        if(element?.classList.contains("full-briefing")){
+            element.classList.remove("full-briefing");
+            if(button) button.innerHTML = "Expandir"
+        }
+        else{
+            element?.classList.add("full-briefing");
+            if(button) button.innerHTML = "Diminuir"
+        }
+
+        const descriptionElement = element?.querySelector(".description");
+        if(descriptionElement?.classList.contains("full-description"))
+            descriptionElement.classList.remove("full-description");
+        else
+            descriptionElement?.classList.add("full-description")
+
+    }
 
     return (
         <div className={`briefing ${className}`} id={props.briefing.id}>
@@ -158,9 +183,7 @@ export function Briefing(props : {briefing : BriefingType, whenSaved : (notify? 
                     {props.briefing.description}
                 </div>
             </div>
-
-            <div className="delete">
-                <i className="bi bi-trash3-fill" onClick={handleDelete}></i>
+            <div className="delete change-state">
                 {
                     props.briefing.state != "Finalizado" ? 
                         <div className="state-buttons">
@@ -174,7 +197,7 @@ export function Briefing(props : {briefing : BriefingType, whenSaved : (notify? 
                                 }
                             </div>
                             {
-                                props.briefing.state == BriefingState.aprovado ? 
+                                props.briefing.state == "Aprovado" ? 
                                     <div 
                                     onClick={() => handleChangeState(BriefingState.negociacao)}
                                     className={`state-button ${props.briefing.state.toLowerCase()}-button`}>
@@ -185,6 +208,13 @@ export function Briefing(props : {briefing : BriefingType, whenSaved : (notify? 
                         </div>
                     : <></>
                 }
+            </div>
+
+            <div className="delete">
+                <i className="bi bi-trash3-fill" onClick={handleDelete}></i>
+                <div className="expand-button state-button" onClick={handleBriefClicking}>
+                    Expandir
+                </div>
             </div>
 
             {
