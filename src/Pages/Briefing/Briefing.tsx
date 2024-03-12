@@ -1,0 +1,199 @@
+import { useState } from "react";
+import { Api, BriefingState, BriefingType } from "../../utils/Api";
+
+import "./Briefing.css"
+import { EditModal } from "../EditModal/EditModal";
+import Swal from "sweetalert2";
+export function Briefing(props : {briefing : BriefingType, whenSaved : (notify? : string) => void}){
+
+    const [editModalId, setEditModalId] = useState<string | undefined>(undefined);
+
+    let className : string = (
+        props.briefing.state == "Negociação" ? "negociacao-shading" :
+        props.briefing.state == "Finalizado" ? "finalizado-shading" :
+        "aprovado-shading"
+    )
+
+    const api : Api = new Api();
+
+    console.log(props)
+
+
+
+    function edit(id : string){
+        setEditModalId(id);
+    }
+
+    const  save = (briefing? : BriefingType) => {
+
+        if(!briefing){
+            Swal.fire({
+                title: "Houve um erro ao editar o briefing", 
+                background: "var(--background-color)",
+            })
+            return;
+        }
+
+        api.update(props.briefing.id, {
+            clientName: briefing.client_name,
+            description: briefing.description,
+            state: briefing.state
+        }).then((response) => {
+            if(response.status == 200){
+                props.whenSaved();
+                Swal.fire({
+                    toast: true,
+                    title: "Briefing editado com sucesso",
+                    position: "top-end",
+                    timer: 1500,
+                    background: "var(--sombra-color)",
+                    color: "var(--text-color)",
+                    confirmButtonColor: "var(--accent-color)"
+                })
+                setEditModalId(undefined);
+            }
+            else{
+                Swal.fire({
+                   title: "Houve um erro ao editar o briefing", 
+                   background: "var(--background-color)",
+                })
+            }
+        })
+
+
+    }
+
+    const handleDelete = () => {
+        Swal.fire({
+            title: "Deseja deletar este briefing?",
+            text: "Não será possível recupera-lo depois",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Sim",
+            cancelButtonText: "Não",
+            background: "var(--background-color)",
+            color: "var(--text-color)"
+          }).then((result) => {
+            if (result.isConfirmed) {
+              Swal.fire({
+                title: "Apagado",
+                text: "O briefing foi apagado.",
+                icon: "success",
+                background: "var(--background-color)",
+                color: "var(--text-color)",
+              });
+              api.delete(props.briefing.id).then((response) => {
+                if(response.status == 200){
+                    props.whenSaved();
+                    setEditModalId(undefined)
+                }
+              })
+            }
+          });
+
+    }
+
+    const handleCancel = () => {
+        Swal.fire({
+            title: "Deseja cancelar edição?",
+            text: "As alterações serão perdidas",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Sim",
+            cancelButtonText: "Não",
+            background: "var(--background-color)",
+            color: "var(--text-color)"
+          }).then((result) => {
+            if (result.isConfirmed) {
+              Swal.fire({
+                title: "Cancelada",
+                text: "Sua edição foi cancelada.",
+                icon: "success",
+                background: "var(--background-color)",
+                color: "var(--text-color)",
+              });
+              setEditModalId(undefined)
+            }
+          });
+    }
+
+    const handleChangeState = (state : BriefingState) => {
+
+        if(!props.briefing)
+            return;
+
+        api.update(props.briefing.id, {
+            state: state
+        }).then((response) => {
+            props.whenSaved();
+        })
+    }
+
+
+    return (
+        <div className={`briefing ${className}`} id={props.briefing.id}>
+            <div className="user">
+                <div className="user-icon">
+                    <i className="bi bi-person-circle"></i>
+                </div>
+                <div className="user-name">
+                    {props.briefing.client_name}
+                </div>
+                <div className="status-icon">
+                    <i className={`bi ${
+                        className == "negociacao-shading" ? "bi-pen" :
+                        className == "finalizado-shading" ? "bi-check-all" :
+                        "bi-check"
+                    }`} id="icon-status">{props.briefing.state}</i>
+                    <i className={`bi bi-pen-fill`} onClick={() => edit(props.briefing.id)}></i>
+                </div>
+            </div>
+            <div className="description-label">
+                Descrição
+                <div className="description">
+                    {props.briefing.description}
+                </div>
+            </div>
+
+            <div className="delete">
+                <i className="bi bi-trash3-fill" onClick={handleDelete}></i>
+                {
+                    props.briefing.state != "Finalizado" ? 
+                        <div className="state-buttons">
+                            Mudar estado para
+                            <div 
+                            onClick={() => handleChangeState(props.briefing.state == "Negociação" ? BriefingState.aprovado : BriefingState.finalizado)}
+                            className={`state-button ${props.briefing.state.toLowerCase()}-button`}>
+                                {
+                                    props.briefing.state == "Negociação" ? "Aprovado" :
+                                    props.briefing.state == "Aprovado" ? "Finalizado" : ""
+                                }
+                            </div>
+                            {
+                                props.briefing.state == BriefingState.aprovado ? 
+                                    <div 
+                                    onClick={() => handleChangeState(BriefingState.negociacao)}
+                                    className={`state-button ${props.briefing.state.toLowerCase()}-button`}>
+                                        Negociacao
+                                    </div>
+                                : <></>
+                            }
+                        </div>
+                    : <></>
+                }
+            </div>
+
+            {
+                editModalId == undefined ? <></>
+                : <EditModal briefingId={editModalId} 
+                closeAction={handleCancel} 
+                saveAction={(briefing? : BriefingType) => save(briefing)}
+                />
+            }
+        </div>
+    )
+}
