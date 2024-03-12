@@ -1,7 +1,7 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import { Api, BriefingState, BriefingType } from "../../utils/Api";
 import "./EditModal.css"
-import { Briefing } from "../Briefing/Briefing";
+import { BtnBold, BtnBulletList, BtnItalic, BtnLink, BtnNumberedList, Editor, EditorProvider, Toolbar } from "react-simple-wysiwyg";
 
 export function EditModal(props : {
     briefingId? : string, 
@@ -31,12 +31,12 @@ export function EditModal(props : {
         })
     }, [])
 
-    const changeDescription = (e : ChangeEvent<HTMLTextAreaElement>) =>{
+    const changeDescription = (e : string) =>{
 
         if(!briefing)
             return;
 
-        setBriefing({...briefing, description: e.target.value})
+        setBriefing({...briefing, description: e})
 
     }
 
@@ -70,12 +70,34 @@ export function EditModal(props : {
                     </div>
                     <div className="description">
                         <label htmlFor="description">Descrição</label>
-                        <textarea
+                        {/* <textarea
                             name="description" 
                             id={`description-${props.briefingId}`} 
                             value={briefing?.description}
                             onChange={changeDescription}
-                        />
+                        /> */}
+                        <EditorProvider>
+                            <Editor 
+                                value={briefing.description} 
+                                onChange={(e) => {changeDescription(e.target.value)}} 
+                                className="editor"
+                                containerProps={{style: {
+                                    overflow: "scroll", resize: "both", 
+                                    height: "auto", width: "fit-content", 
+                                    wordBreak: "break-all", minWidth: "100%",
+                                    maxWidth: "80vw", maxHeight: "60vh",
+                                    backdropFilter: "blur(100px)"
+                                }}}
+                            >
+                                <Toolbar>
+                                    <BtnBold/>
+                                    <BtnItalic/>
+                                    <BtnBulletList/>
+                                    <BtnNumberedList/>
+                                    <BtnLink/>
+                                </Toolbar>
+                            </Editor>
+                        </EditorProvider>
                     </div>
                 </div>
                 <div className="button-container">

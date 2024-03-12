@@ -5,7 +5,7 @@
     justify-content: flex-start;
     justify-items: flex-start;
     align-items: flex-start;
-    width: 17rem;
+    width: 25rem;
     height: 28rem;
     padding: 1rem;
     box-shadow: 0px 0px 5px var(--sombra-color);
@@ -17,19 +17,21 @@
     width: 100%;
     height: fit-content;
     order: -1;
+
+    min-width: 17rem;
+    min-height: 28rem;
 }
 
 .negociacao-shading{
-    box-shadow: inset 0px 0px 10px color-mix(in srgb, var(--negociacao-color) 50%, transparent);
+    box-shadow: 0px 0px 10px color-mix(in srgb, var(--negociacao-color) 70%, transparent);
 }
 
 .finalizado-shading{
-    box-shadow: inset 0px 0px 5px color-mix(in srgb, var(--finalizado-color) 50%, transparent);
+    box-shadow: 0px 0px 10px color-mix(in srgb, var(--finalizado-color) 70%, transparent);
 }
 
 .aprovado-shading{
-    box-shadow: inset 0px 0px 5px var(--aprovado-color);
-    box-shadow: inset 0px 0px 5px color-mix(in srgb, var(--aprovado-color) 50%, transparent);
+    box-shadow: 0px 0px 10px color-mix(in srgb, var(--aprovado-color) 70%, transparent);
 }
 
 .user{
@@ -46,6 +48,10 @@
     font-size: 2rem;
     width: 2rem;
     height: 2rem;
+}
+
+.user-name{
+    width: 100%;
 }
 
 .status-icon{

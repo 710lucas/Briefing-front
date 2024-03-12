@@ -7,6 +7,26 @@ import Swal from 'sweetalert2'
 import 'react-toastify/dist/ReactToastify.css';
 import { EditModal } from "../EditModal/EditModal";
 
+export const toggleExpandBriefing = (id : string) => {
+    const element = document.getElementById(id)
+    const button = element?.querySelector(".expand-button");
+    if(element?.classList.contains("full-briefing")){
+        element.classList.remove("full-briefing");
+        if(button) button.innerHTML = "Expandir"
+    }
+    else{
+        element?.classList.add("full-briefing");
+        if(button) button.innerHTML = "Diminuir"
+    }
+
+    const descriptionElement = element?.querySelector(".description");
+    if(descriptionElement?.classList.contains("full-description"))
+        descriptionElement.classList.remove("full-description");
+    else
+        descriptionElement?.classList.add("full-description")
+
+}
+
 export function Home(){
 
     const [briefings, setBriefings] = useState<BriefingType[] | undefined>(undefined);
@@ -93,6 +113,23 @@ export function Home(){
         })
     }
 
+
+    const handleExpandAll = () => {
+
+        briefings?.forEach(briefing => {
+            toggleExpandBriefing(briefing.id)
+        })
+
+        const expandButton = document.getElementById("expand-all-button");
+
+        if(!expandButton)
+            return;
+
+        expandButton.innerText = expandButton?.innerText == "Expandir todos" ? "Diminuir todos" : "Expandir todos";
+
+
+    }
+
     return (
 
         <div className="home-page">
@@ -101,16 +138,25 @@ export function Home(){
                 Gestor de Briefings
             </div>
 
-            <div className="create-button" onClick={handleCreateButtonClick}>
-                Adicionar briefing
+            <div className="buttons-container">
+                <div className="create-button" onClick={handleCreateButtonClick}>
+                    Adicionar briefing
+                </div>
+                <div className="create-button" id="expand-all-button" onClick={handleExpandAll}>
+                    Expandir todos
+                </div>
             </div>
+
 
             <div className="briefings-container">
 
                 {
+                    briefings != undefined && briefings.length > 0 ?
                     briefings?.map((b, key) => (
                         <Briefing briefing={b} key={key} whenSaved={handleSave}/>
                     ))
+                    :
+                    <p>Não há nenhum briefing cadastrado.</p>
                 }
 
             </div>

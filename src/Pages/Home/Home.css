@@ -35,6 +35,12 @@
 
 }
 
+.buttons-container{
+    display: flex;
+    flex-direction: row;
+    gap: 1.25rem;
+}
+
 .title{
     padding-top: 3rem;
     font-size: 3rem;
@@ -51,6 +57,10 @@
     margin: auto;
     padding: 0rem 5rem;
     transition: ease-out 0.2s;
+}
+
+.briefings-container .p{
+    text-align: center;
 }
 
 .create-button{

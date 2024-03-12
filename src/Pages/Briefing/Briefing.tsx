@@ -4,6 +4,9 @@ import { Api, BriefingState, BriefingType } from "../../utils/Api";
 import "./Briefing.css"
 import { EditModal } from "../EditModal/EditModal";
 import Swal from "sweetalert2";
+import DOMPurify from 'dompurify'
+import { toggleExpandBriefing } from "../Home/Home";
+
 export function Briefing(props : {briefing : BriefingType, whenSaved : (notify? : string) => void}){
 
     const [editModalId, setEditModalId] = useState<string | undefined>(undefined);
@@ -38,6 +41,8 @@ export function Briefing(props : {briefing : BriefingType, whenSaved : (notify? 
             clientName: briefing.client_name,
             description: briefing.description,
             state: briefing.state
+        }).then(async (response) => {
+            return {status : response.status, text: await response.text()}
         }).then((response) => {
             if(response.status == 200){
                 props.whenSaved();
@@ -84,11 +89,15 @@ export function Briefing(props : {briefing : BriefingType, whenSaved : (notify? 
                 background: "var(--background-color)",
                 color: "var(--text-color)",
               });
-              api.delete(props.briefing.id).then((response) => {
-                if(response.status == 200){
-                    props.whenSaved();
-                    setEditModalId(undefined)
-                }
+                api.delete(props.briefing.id)
+                .then(async (response) => {
+                    return {status : response.status, text : await response.text()}
+                })
+                .then((response) => {
+                    if(response.status == 200){
+                        props.whenSaved(response.text);
+                        setEditModalId(undefined)
+                    }
               })
             }
           });
@@ -138,24 +147,9 @@ export function Briefing(props : {briefing : BriefingType, whenSaved : (notify? 
 
     }
 
-    const handleBriefClicking = () => {
+    const handlBriefExpand = () => {
 
-        const element = document.getElementById(props.briefing.id);
-        const button = element?.querySelector(".expand-button");
-        if(element?.classList.contains("full-briefing")){
-            element.classList.remove("full-briefing");
-            if(button) button.innerHTML = "Expandir"
-        }
-        else{
-            element?.classList.add("full-briefing");
-            if(button) button.innerHTML = "Diminuir"
-        }
-
-        const descriptionElement = element?.querySelector(".description");
-        if(descriptionElement?.classList.contains("full-description"))
-            descriptionElement.classList.remove("full-description");
-        else
-            descriptionElement?.classList.add("full-description")
+        toggleExpandBriefing(props.briefing.id)
 
     }
 
@@ -179,8 +173,7 @@ export function Briefing(props : {briefing : BriefingType, whenSaved : (notify? 
             </div>
             <div className="description-label">
                 Descrição
-                <div className="description">
-                    {props.briefing.description}
+                <div className="description" dangerouslySetInnerHTML={{__html : DOMPurify.sanitize(props.briefing.description.replace("\n", "<br>"))}}>
                 </div>
             </div>
             <div className="delete change-state">
@@ -212,7 +205,7 @@ export function Briefing(props : {briefing : BriefingType, whenSaved : (notify? 
 
             <div className="delete">
                 <i className="bi bi-trash3-fill" onClick={handleDelete}></i>
-                <div className="expand-button state-button" onClick={handleBriefClicking}>
+                <div className="expand-button state-button" onClick={handlBriefExpand}>
                     Expandir
                 </div>
             </div>
