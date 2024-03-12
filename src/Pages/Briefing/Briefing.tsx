@@ -149,7 +149,7 @@ export function Briefing(props : {briefing : BriefingType, whenSaved : (notify? 
                         className == "finalizado-shading" ? "bi-check-all" :
                         "bi-check"
                     }`} id="icon-status">{props.briefing.state}</i>
-                    <i className={`bi bi-pen-fill`} onClick={() => edit(props.briefing.id)}></i>
+                    <i className={`bi bi-pen-fill`} id="icon-status" onClick={() => edit(props.briefing.id)}>Editar</i>
                 </div>
             </div>
             <div className="description-label">
