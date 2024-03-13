@@ -21,14 +21,23 @@ export function EditModal(props : {
             return;
         }
 
-        api.getById(props.briefingId).then((response) => {
-            if(response.status == 200){
-                return response.json();
-            }
-            return undefined;
-        }).then((briefingResponse : BriefingType) => {
-            setBriefing(briefingResponse);
-        })
+        try{
+            api.getById(props.briefingId).then((response) => {
+                if(response.status == 200){
+                    return response.json();
+                }
+                return undefined;
+            }).then((briefingResponse : BriefingType) => {
+                setBriefing(briefingResponse);
+            })
+            .catch((err) => {
+                console.error(err)
+            })
+        }
+        catch(err){
+            console.error(err)
+        }
+
     }, [])
 
     const changeDescription = (e : string) =>{

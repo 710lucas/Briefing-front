@@ -68,32 +68,40 @@ export function Home(){
 
     const loadBriefings = () => {
 
-        api.getAll().then(response => {
-            if(response.status == 200){
-                return response.json();
-            }
-        }).then((body : BriefingType[]) => {
+        try{
+            api.getAll().then(response => {
+                if(response.status == 200){
+                    return response.json();
+                }
+            }).then((body : BriefingType[]) => {
 
-            let briefingsRequest : BriefingType[] = body;
-            let briefingsAprovados : BriefingType[] = [];
-            let briefingsFinalizados : BriefingType[] = [];
-            let briefingsNegociados : BriefingType[] = [];
+                let briefingsRequest : BriefingType[] = body;
+                let briefingsAprovados : BriefingType[] = [];
+                let briefingsFinalizados : BriefingType[] = [];
+                let briefingsNegociados : BriefingType[] = [];
 
-            for(let brief of briefingsRequest){
-                if(brief.state == BriefingState.aprovado)
-                    briefingsAprovados.push(brief);
-                else if(brief.state == BriefingState.finalizado)
-                    briefingsFinalizados.push(brief)
-                else if(brief.state == BriefingState.negociacao)
-                    briefingsNegociados.push(brief)
-            }
+                for(let brief of briefingsRequest){
+                    if(brief.state == BriefingState.aprovado)
+                        briefingsAprovados.push(brief);
+                    else if(brief.state == BriefingState.finalizado)
+                        briefingsFinalizados.push(brief)
+                    else if(brief.state == BriefingState.negociacao)
+                        briefingsNegociados.push(brief)
+                }
 
-            briefingsAprovados = briefingsAprovados.reverse()
-            briefingsFinalizados = briefingsFinalizados.reverse()
-            briefingsNegociados = briefingsNegociados.reverse()
+                briefingsAprovados = briefingsAprovados.reverse()
+                briefingsFinalizados = briefingsFinalizados.reverse()
+                briefingsNegociados = briefingsNegociados.reverse()
 
-            setBriefings(briefingsNegociados.concat(briefingsAprovados).concat(briefingsFinalizados))
-        })
+                setBriefings(briefingsNegociados.concat(briefingsAprovados).concat(briefingsFinalizados))
+            })
+            .catch((err) => {
+                console.error(err)
+            })
+        }
+        catch(err){
+            console.error(err);
+        }
 
     }
 
@@ -114,30 +122,39 @@ export function Home(){
             })
             return;
         }
-        api.create({
-            clientName: briefing.client_name,
-            description: briefing.description
-        }).then((response) => {
-            if(response.status == 200){
-                Swal.fire({
-                    toast: true,
-                    title: "Briefing criado com sucesso",
-                    position: "top-end",
-                    timer: 1500,
-                    background: "var(--sombra-color)",
-                    color: "var(--text-color)",
-                    confirmButtonColor: "var(--accent-color)"
-                })
-                setCreateModal(false);
-                loadBriefings() ;
-            }
-            else{
-                Swal.fire({
-                   title: "Houve um erro ao criar o briefing", 
-                   background: "var(--background-color)",
-                })
-            }
-        })
+
+        try{
+            api.create({
+                clientName: briefing.client_name,
+                description: briefing.description
+            }).then((response) => {
+                if(response.status == 200){
+                    Swal.fire({
+                        toast: true,
+                        title: "Briefing criado com sucesso",
+                        position: "top-end",
+                        timer: 1500,
+                        background: "var(--sombra-color)",
+                        color: "var(--text-color)",
+                        confirmButtonColor: "var(--accent-color)"
+                    })
+                    setCreateModal(false);
+                    loadBriefings() ;
+                }
+                else{
+                    Swal.fire({
+                    title: "Houve um erro ao criar o briefing", 
+                    background: "var(--background-color)",
+                    })
+                }
+            })
+            .catch((err) => {
+                console.error(err)
+            })
+        }
+        catch(err){
+            console.log(err)
+        }
     }
 
 

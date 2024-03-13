@@ -37,34 +37,41 @@ export function Briefing(props : {briefing : BriefingType, whenSaved : (notify? 
             return;
         }
 
-        api.update(props.briefing.id, {
-            clientName: briefing.client_name,
-            description: briefing.description,
-            state: briefing.state
-        }).then(async (response) => {
-            return {status : response.status, text: await response.text()}
-        }).then((response) => {
-            if(response.status == 200){
-                props.whenSaved();
-                Swal.fire({
-                    toast: true,
-                    title: "Briefing editado com sucesso",
-                    position: "top-end",
-                    timer: 1500,
-                    background: "var(--sombra-color)",
-                    color: "var(--text-color)",
-                    confirmButtonColor: "var(--accent-color)"
-                })
-                setEditModalId(undefined);
-            }
-            else{
-                Swal.fire({
-                   title: "Houve um erro ao editar o briefing", 
-                   background: "var(--background-color)",
-                })
-            }
-        })
-
+        try{
+            api.update(props.briefing.id, {
+                clientName: briefing.client_name,
+                description: briefing.description,
+                state: briefing.state
+            }).then(async (response) => {
+                return {status : response.status, text: await response.text()}
+            }).then((response) => {
+                if(response.status == 200){
+                    props.whenSaved();
+                    Swal.fire({
+                        toast: true,
+                        title: "Briefing editado com sucesso",
+                        position: "top-end",
+                        timer: 1500,
+                        background: "var(--sombra-color)",
+                        color: "var(--text-color)",
+                        confirmButtonColor: "var(--accent-color)"
+                    })
+                    setEditModalId(undefined);
+                }
+                else{
+                    Swal.fire({
+                    title: "Houve um erro ao editar o briefing", 
+                    background: "var(--background-color)",
+                    })
+                }
+            })
+            .catch((err) => {
+                console.error(err)
+            })
+        }
+        catch(err){
+            console.error(err);
+        }
 
     }
 
@@ -89,6 +96,7 @@ export function Briefing(props : {briefing : BriefingType, whenSaved : (notify? 
                 background: "var(--background-color)",
                 color: "var(--text-color)",
               });
+              try{
                 api.delete(props.briefing.id)
                 .then(async (response) => {
                     return {status : response.status, text : await response.text()}
@@ -98,7 +106,15 @@ export function Briefing(props : {briefing : BriefingType, whenSaved : (notify? 
                         props.whenSaved(response.text);
                         setEditModalId(undefined)
                     }
-              })
+                })
+                .catch((err) => {
+                    console.error(err)
+                })
+
+              }
+              catch(err){
+                console.error(err)
+              }
             }
           });
 
@@ -134,16 +150,24 @@ export function Briefing(props : {briefing : BriefingType, whenSaved : (notify? 
 
         if(!props.briefing)
             return;
-
-        api.update(props.briefing.id, {
-            state: state
-        }).then(() => {
-            props.whenSaved();
-            const element = document.getElementById(props.briefing.id);
-            const descriptionElement = element?.querySelector(".description");
-            if(descriptionElement?.classList.contains("full-description"))
-                descriptionElement.classList.remove("full-description");
-        })
+        
+        try{
+            api.update(props.briefing.id, {
+                state: state
+            }).then(() => {
+                props.whenSaved();
+                const element = document.getElementById(props.briefing.id);
+                const descriptionElement = element?.querySelector(".description");
+                if(descriptionElement?.classList.contains("full-description"))
+                    descriptionElement.classList.remove("full-description");
+            })
+            .catch((err) => {
+                console.error(err)
+            })
+        }
+        catch(err){
+            console.error(err);
+        }
 
     }
 
