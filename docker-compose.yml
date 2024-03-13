@@ -5,7 +5,7 @@ services:
         container_name: briefing_front
         build:
             context: .
-        restart: unless-stopped
+        restart: always
         ports:
             - "80:80"
         env_file:
