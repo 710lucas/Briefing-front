@@ -137,7 +137,7 @@ export function Briefing(props : {briefing : BriefingType, whenSaved : (notify? 
 
         api.update(props.briefing.id, {
             state: state
-        }).then((response) => {
+        }).then(() => {
             props.whenSaved();
             const element = document.getElementById(props.briefing.id);
             const descriptionElement = element?.querySelector(".description");

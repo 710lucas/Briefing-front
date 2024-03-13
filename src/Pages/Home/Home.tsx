@@ -27,6 +27,7 @@ export const toggleExpandBriefing = (id : string) => {
 
 }
 
+
 export function Home(){
 
     const [briefings, setBriefings] = useState<BriefingType[] | undefined>(undefined);
@@ -37,6 +38,32 @@ export function Home(){
     useEffect(() => {
         loadBriefings();
     }, [])
+
+    const handleCancel = () => {
+        Swal.fire({
+            title: "Deseja cancelar edição?",
+            text: "As alterações serão perdidas",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Sim",
+            cancelButtonText: "Não",
+            background: "var(--background-color)",
+            color: "var(--text-color)"
+            }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                title: "Cancelada",
+                text: "Sua edição foi cancelada.",
+                icon: "success",
+                background: "var(--background-color)",
+                color: "var(--text-color)",
+                });
+                setCreateModal(false);
+            }
+            });
+    }
 
 
     const loadBriefings = () => {
@@ -166,7 +193,7 @@ export function Home(){
                 ?
                     <EditModal 
                         title="Criar Briefing"
-                        closeAction={() => {setCreateModal(false)}}
+                        closeAction={() => {handleCancel()}}
                         saveAction={(briefing? : BriefingType) => {handleCreateNewModal(briefing)}}
                     />
                 : 
