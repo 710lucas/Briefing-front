@@ -98,7 +98,7 @@ export function Home(){
     }
 
 
-    const handleSave = (notify? : string) => {
+    const handleSave = () => {
         loadBriefings()
     }
 

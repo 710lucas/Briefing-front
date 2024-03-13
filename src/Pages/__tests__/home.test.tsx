@@ -1,19 +1,9 @@
 
 import { describe, it, expect } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react'
-import { BriefingState, BriefingType } from '../../utils/Api';
 import { Home } from '../Home/Home';
 
 describe("Teste de home", async () => {
-
-    const defaultBriefing : BriefingType = {
-        client_name: "lucas",
-        description: "descrição",
-        date: new Date(),
-        deleted: false,
-        id: "id",
-        state: BriefingState.negociacao
-    }
 
     it("testando renderização de home", async () => {
         render(<Home></Home>)

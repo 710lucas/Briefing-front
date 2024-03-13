@@ -1,0 +1,12 @@
+version: '3.5'
+
+services:
+    briefing-front:
+        container_name: briefing_front
+        build:
+            context: .
+        restart: unless-stopped
+        ports:
+            - "80:80"
+        env_file:
+            - .env
